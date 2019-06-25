@@ -5,7 +5,7 @@ with open("README.md", "r") as fh:
 
 setuptools.setup(
     name='parallelprocs',
-    version='0.1.2',
+    version='0.1.4',
     author='Ken Youens-Clark',
     author_email='kyclark@gmail.com',
     description='Run command lines via (GNU) parallel',

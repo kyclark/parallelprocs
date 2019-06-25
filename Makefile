@@ -13,5 +13,5 @@ test_upload: dist
 test_install:
 	(cd ~ && python3 -m pip install --index-url https://test.pypi.org/simple/ --no-deps dire)
 
-upload:
+up:
 	twine upload dist/*
