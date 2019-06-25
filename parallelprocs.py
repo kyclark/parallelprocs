@@ -45,7 +45,7 @@ May raise exceptions, so run with try/except.
         if verbose:
             print(s, file=sys.stderr)
 
-    tell('{} (# jobs = {})'.format(msg, len(commands)))
+    tell('{} (# jobs = {}, # parallel = {})'.format(msg, len(commands), num_procs))
 
     if parallel and os.path.isfile(parallel):
         job_file = tempfile.NamedTemporaryFile(delete=False, mode='wt')
@@ -69,7 +69,7 @@ May raise exceptions, so run with try/except.
 
         except subprocess.CalledProcessError as err:
             stderr = err.stderr + '\n' if err.stderr else ''
-            stdout = out.stdout + '\n' if out.stdout else ''
+            stdout = err.stdout + '\n' if err.stdout else ''
             raise Exception('Error: {}{}'.format(stdout, stderr))
 
         finally:
