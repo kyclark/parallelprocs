@@ -1,28 +1,33 @@
-"""Run commands with (GNU) parallel"""
+"""
+Purpose: Run commands with (GNU) parallel
+Author:  Ken Youens-Clark <kyclark@gmail.com>
+"""
 
 import os
 import sys
 import tempfile
 import subprocess
 from shutil import which
+from typing import List, Optional
 
 
 # --------------------------------------------------
-def run(commands,
-        msg='Running job',
-        parallel=which('parallel'),
-        num_procs=0,
-        verbose=False,
-        halt=0):
+def run(commands: List[str],
+        msg: str = 'Running job',
+        parallel: Optional[str] = which('parallel'),
+        num_procs: int = 2,
+        verbose: bool = False,
+        halt: int = 0):
     """
 Run commands in parallel
 
 Required:
 
-- commands (list(str)): commands
+- commands (List[str]): commands
 
 Keyword options:
 
+- msg (str): message to print if verbose
 - parallel (str): path to "parallel", default "which('parallel')"
 - num_procs (int): num of concurrent processes, default "0" to use all CPUs
 - verbose (bool): print messages to sys.stderr, default "False"
@@ -45,9 +50,10 @@ May raise exceptions, so run with try/except.
         if verbose:
             print(s, file=sys.stderr)
 
-    tell('{} (# jobs = {}, # parallel = {})'.format(msg, len(commands), num_procs))
+    tell(f'{msg} (# jobs = {len(commands)}, # parallel = {num_procs})')
 
     if parallel and os.path.isfile(parallel):
+        # Run in parallel if possible
         job_file = tempfile.NamedTemporaryFile(delete=False, mode='wt')
         job_file.write('\n'.join(commands))
         job_file.close()
@@ -75,10 +81,10 @@ May raise exceptions, so run with try/except.
         finally:
             os.remove(job_file.name)
     else:
+        # Maybe parallel isn't installed, so run serially
         for cmd in commands:
-            rv, out = subprocess.getstatusoutput(cmd)
+            rv, output = subprocess.getstatusoutput(cmd)
             if rv != 0:
-                raise Exception('Failed to run: {}\nError: {}'.format(
-                    cmd, out))
+                raise Exception(f'Failed to run: {cmd}\nError: {output}')
 
     return True
